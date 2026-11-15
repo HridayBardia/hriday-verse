@@ -14,20 +14,27 @@ const TechStack = lazy(() => import("./TechStack"));
 
 const MainContainer = ({ children }: PropsWithChildren) => {
   const [isDesktopView, setIsDesktopView] = useState<boolean>(
-    window.innerWidth > 1024
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : true
   );
 
   useEffect(() => {
+    setSplitText();
+
+    let timeoutId: number | undefined;
     const resizeHandler = () => {
-      setSplitText();
-      setIsDesktopView(window.innerWidth > 1024);
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        setIsDesktopView(window.innerWidth >= 1024);
+        setSplitText();
+      }, 150);
     };
-    resizeHandler();
-    window.addEventListener("resize", resizeHandler);
+
+    window.addEventListener("resize", resizeHandler, { passive: true });
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener("resize", resizeHandler);
     };
-  }, [isDesktopView]);
+  }, []);
 
   return (
     <div className="container-main">
@@ -35,22 +42,18 @@ const MainContainer = ({ children }: PropsWithChildren) => {
       <Navbar />
       <SocialIcons />
       {isDesktopView && children}
-      <div id="smooth-wrapper">
-        <div id="smooth-content">
-          <div className="container-main">
-            <Landing>{!isDesktopView && children}</Landing>
-            <About />
-            <WhatIDo />
-            <Career />
-            <Work />
-            {isDesktopView && (
-              <Suspense fallback={<div>Loading....</div>}>
-                <TechStack />
-              </Suspense>
-            )}
-            <Contact />
-          </div>
-        </div>
+      <div className="content-wrapper">
+        <Landing>{!isDesktopView && children}</Landing>
+        <About />
+        <WhatIDo />
+        <Career />
+        <Work />
+        {isDesktopView && (
+          <Suspense fallback={<div className="tech-fallback">Loading tech stack...</div>}>
+            <TechStack />
+          </Suspense>
+        )}
+        <Contact />
       </div>
     </div>
   );

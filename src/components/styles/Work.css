@@ -7,6 +7,8 @@
   color: var(--accentColor);
 }
 .work-section {
+  position: relative;
+  z-index: 5;
   transition: 0s;
   height: 100vh;
   box-sizing: border-box;
@@ -26,6 +28,8 @@
   margin-left: -80px;
   padding-right: 120px;
   position: relative;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 .work-box {
   padding: 80px;
@@ -37,6 +41,8 @@
   flex-shrink: 0;
   gap: 50px;
   justify-content: start;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 .work-flex .work-box:nth-child(even) {
   flex-direction: column-reverse;
@@ -44,7 +50,7 @@
 .work-flex::before,
 .work-flex::after {
   content: "";
-  width: calc(50000vw);
+  width: 300vw;
   height: 1px;
   background-color: #363636;
   position: absolute;

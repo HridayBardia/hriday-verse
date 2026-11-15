@@ -87,24 +87,25 @@ const WhatIDo = () => {
             <div className="what-corner"></div>
 
             <div className="what-content-in">
-              <h3>DEVELOP</h3>
-              <h4>Description</h4>
+              <h3>FULL-STACK</h3>
+              <h4>Architecture & Engineering</h4>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-                quia aliquid laboriosam ducimus sit molestiae.
+                Architecting performant, production-grade web systems from interactive 3D interfaces to resilient Python backends, reactive Next.js frontends, and relational cloud databases.
               </p>
               <h5>Skillset & tools</h5>
               <div className="what-content-flex">
-                <div className="what-tags">JavaScript</div>
-                <div className="what-tags">TypeScript</div>
-                <div className="what-tags">Three.js</div>
-                <div className="what-tags">React</div>
-                <div className="what-tags">Css</div>
-                <div className="what-tags">Node.js</div>
                 <div className="what-tags">Next.js</div>
-                <div className="what-tags">Express.js</div>
-                <div className="what-tags">PHP</div>
-                <div className="what-tags">MySql</div>
+                <div className="what-tags">React</div>
+                <div className="what-tags">TypeScript</div>
+                <div className="what-tags">Python</div>
+                <div className="what-tags">Flask</div>
+                <div className="what-tags">FastAPI</div>
+                <div className="what-tags">Tailwind CSS</div>
+                <div className="what-tags">PostgreSQL</div>
+                <div className="what-tags">Supabase</div>
+                <div className="what-tags">Three.js</div>
+                <div className="what-tags">GSAP</div>
+                <div className="what-tags">Git</div>
               </div>
               <div className="what-arrow"></div>
             </div>
@@ -128,22 +129,22 @@ const WhatIDo = () => {
             </div>
             <div className="what-corner"></div>
             <div className="what-content-in">
-              <h3>DESIGN</h3>
-              <h4>Description</h4>
+              <h3>AI & RESEARCH</h3>
+              <h4>Machine Learning & Cryptography</h4>
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-                quia aliquid laboriosam ducimus sit molestiae
+                Designing machine learning pipelines, retrieval-augmented generation (RAG) engines, zero-knowledge verifiable health vaults, and quantum-resistant DNA steganography models.
               </p>
               <h5>Skillset & tools</h5>
               <div className="what-content-flex">
-                <div className="what-tags">Blender</div>
-                <div className="what-tags">Zbrush</div>
-                <div className="what-tags">UI Design</div>
-                <div className="what-tags">Motion</div>
-                <div className="what-tags">Rigging</div>
-                <div className="what-tags">3D Animation</div>
-                <div className="what-tags">Character Design</div>
-                <div className="what-tags">Modelling</div>
+                <div className="what-tags">Machine Learning</div>
+                <div className="what-tags">Deep Learning</div>
+                <div className="what-tags">RAG Pipelines</div>
+                <div className="what-tags">LangChain</div>
+                <div className="what-tags">ZK Proofs</div>
+                <div className="what-tags">Bio-Cryptography</div>
+                <div className="what-tags">Vector Databases</div>
+                <div className="what-tags">PyTorch</div>
+                <div className="what-tags">NLP / LLMs</div>
               </div>
               <div className="what-arrow"></div>
             </div>

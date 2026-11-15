@@ -3,6 +3,7 @@
   max-width: var(--cMaxWidth);
   width: var(--cWidth);
   justify-content: space-between;
+  align-items: center;
   padding: 20px 0px;
   margin-bottom: -100px;
   box-sizing: border-box;
@@ -12,17 +13,28 @@
   top: 0;
   z-index: 9999;
 }
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-visitor-wrap {
+  display: none;
+}
+
 .header ul {
   font-size: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin: 0;
   padding: 0;
   list-style: none;
-  column-gap: 40px;
-  row-gap: 8px;
-  align-items: end;
+  column-gap: 24px;
+  align-items: center;
 }
+
 .header ul li {
   margin-left: 0px;
   letter-spacing: 1px;
@@ -30,54 +42,53 @@
   font-weight: 600;
   cursor: pointer;
 }
+
 .navbar-connect {
-  position: absolute;
   display: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 15px;
-  letter-spacing: 1px;
-  font-weight: 500;
-}
-.navbar-title {
-  font-weight: 700;
   font-size: 14px;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
 }
-@media only screen and (min-width: 500px) {
-  .header {
-    padding: 20px 0px;
-  }
-  .header ul {
-    flex-direction: row;
-    align-items: center;
-    font-size: 14px;
-  }
-  .header ul li {
-    color: #eae5ec;
-  }
-  .navbar-title {
-    font-size: 16px;
+
+.navbar-connect:hover {
+  color: #fff;
+}
+
+.navbar-title {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar-title span {
+  color: var(--accentColor, #3b82f6);
+}
+
+@media only screen and (min-width: 650px) {
+  .navbar-visitor-wrap {
+    display: block;
   }
 }
+
 @media only screen and (min-width: 900px) {
   .navbar-connect {
     display: block;
   }
 }
+
 @media only screen and (min-width: 1200px) {
   .header {
-    padding: 35px 0px;
+    padding: 30px 0px;
   }
   .header ul {
-    column-gap: 80px;
-    font-size: 16px;
-  }
-  .navbar-connect {
-    font-size: 16px;
+    column-gap: 45px;
+    font-size: 15px;
   }
   .navbar-title {
-    font-size: 18px;
+    font-size: 20px;
   }
 }

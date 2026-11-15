@@ -1,126 +1,170 @@
 import * as THREE from "three";
 import { useRef, useMemo, useState, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
-import { EffectComposer, N8AO } from "@react-three/postprocessing";
-import {
-  BallCollider,
-  Physics,
-  RigidBody,
-  CylinderCollider,
-  RapierRigidBody,
-} from "@react-three/rapier";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+
+const techList = [
+  { name: "React", img: "/images/react2.webp", color: "#61dafb" },
+  { name: "Next.js", img: "/images/next2.webp", color: "#ffffff" },
+  { name: "TypeScript", img: "/images/typescript.webp", color: "#3178c6" },
+  { name: "Node.js", img: "/images/node2.webp", color: "#68a063" },
+  { name: "Express", img: "/images/express.webp", color: "#ffffff" },
+  { name: "MongoDB", img: "/images/mongo.webp", color: "#47a248" },
+  { name: "MySQL", img: "/images/mysql.webp", color: "#00758f" },
+  { name: "JavaScript", img: "/images/javascript.webp", color: "#f7df1e" },
+];
 
 const textureLoader = new THREE.TextureLoader();
-const imageUrls = [
-  "/images/react2.webp",
-  "/images/next2.webp",
-  "/images/node2.webp",
-  "/images/express.webp",
-  "/images/mongo.webp",
-  "/images/mysql.webp",
-  "/images/typescript.webp",
-  "/images/javascript.webp",
-];
-const textures = imageUrls.map((url) => textureLoader.load(url));
+const sphereGeometry = new THREE.SphereGeometry(1, 24, 24);
 
-const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
-
-const spheres = [...Array(30)].map(() => ({
-  scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
-}));
-
-type SphereProps = {
-  vec?: THREE.Vector3;
+interface SphereData {
+  pos: [number, number, number];
+  basePos: THREE.Vector3;
+  velocity: THREE.Vector3;
   scale: number;
-  r?: typeof THREE.MathUtils.randFloatSpread;
-  material: THREE.MeshPhysicalMaterial;
-  isActive: boolean;
-};
+  textureIndex: number;
+  phase: number;
+  speed: number;
+}
 
-function SphereGeo({
-  vec = new THREE.Vector3(),
-  scale,
-  r = THREE.MathUtils.randFloatSpread,
-  material,
-  isActive,
-}: SphereProps) {
-  const api = useRef<RapierRigidBody | null>(null);
+function InteractiveSphere({
+  data,
+  textures,
+  mousePos,
+  isHovered,
+}: {
+  data: SphereData;
+  textures: THREE.Texture[];
+  mousePos: React.MutableRefObject<THREE.Vector3>;
+  isHovered: boolean;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const currentPos = useRef(new THREE.Vector3(...data.pos));
 
-  useFrame((_state, delta) => {
-    if (!isActive) return;
-    delta = Math.min(0.1, delta);
-    const impulse = vec
-      .copy(api.current!.translation())
-      .normalize()
-      .multiply(
-        new THREE.Vector3(
-          -50 * delta * scale,
-          -150 * delta * scale,
-          -50 * delta * scale
-        )
-      );
+  useFrame((state, delta) => {
+    if (!meshRef.current) return;
+    const time = state.clock.getElapsedTime();
+    const clampedDelta = Math.min(delta, 0.05);
 
-    api.current?.applyImpulse(impulse, true);
+    // Natural floating motion
+    const floatY = Math.sin(time * data.speed + data.phase) * 0.8;
+    const floatX = Math.cos(time * data.speed * 0.7 + data.phase) * 0.6;
+    const floatZ = Math.sin(time * data.speed * 0.5 + data.phase) * 0.5;
+
+    const target = data.basePos.clone().add(new THREE.Vector3(floatX, floatY, floatZ));
+
+    // Interactive mouse repulsion
+    if (isHovered) {
+      const distToMouse = target.distanceTo(mousePos.current);
+      if (distToMouse < 6) {
+        const repulsion = target
+          .clone()
+          .sub(mousePos.current)
+          .normalize()
+          .multiplyScalar((6 - distToMouse) * 1.8);
+        target.add(repulsion);
+      }
+    }
+
+    // Smooth lerp to target
+    currentPos.current.lerp(target, 4 * clampedDelta);
+    meshRef.current.position.copy(currentPos.current);
+
+    // Gentle rotation
+    meshRef.current.rotation.y += 0.4 * clampedDelta;
+    meshRef.current.rotation.x += 0.2 * clampedDelta;
   });
 
+  const texture = textures[data.textureIndex % textures.length];
+
   return (
-    <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
-      friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
-      ref={api}
-      colliders={false}
+    <mesh
+      ref={meshRef}
+      scale={data.scale}
+      geometry={sphereGeometry}
+      castShadow={false}
+      receiveShadow={false}
     >
-      <BallCollider args={[scale]} />
-      <CylinderCollider
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0, 1.2 * scale]}
-        args={[0.15 * scale, 0.275 * scale]}
+      <meshStandardMaterial
+        map={texture}
+        roughness={0.3}
+        metalness={0.2}
+        emissive="#1a102f"
+        emissiveIntensity={0.2}
       />
-      <mesh
-        castShadow
-        receiveShadow
-        scale={scale}
-        geometry={sphereGeometry}
-        material={material}
-        rotation={[0.3, 1, 1]}
-      />
-    </RigidBody>
+    </mesh>
   );
 }
 
-type PointerProps = {
-  vec?: THREE.Vector3;
-  isActive: boolean;
-};
+function SphereScene({ isActive }: { isActive: boolean }) {
+  const { viewport } = useThree();
+  const mousePos = useRef(new THREE.Vector3(0, 0, 0));
+  const [isHovered, setIsHovered] = useState(false);
 
-function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
-  const ref = useRef<RapierRigidBody>(null);
+  const textures = useMemo(() => {
+    return techList.map((t) => textureLoader.load(t.img));
+  }, []);
 
-  useFrame(({ pointer, viewport }) => {
-    if (!isActive) return;
-    const targetVec = vec.lerp(
-      new THREE.Vector3(
-        (pointer.x * viewport.width) / 2,
-        (pointer.y * viewport.height) / 2,
-        0
-      ),
-      0.2
+  // Generate 16 balanced floating spheres
+  const spheres = useMemo<SphereData[]>(() => {
+    const list: SphereData[] = [];
+    const count = 16;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const radius = 4 + (i % 3) * 2.5;
+      const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
+      const y = Math.sin(angle) * (radius * 0.6) + (Math.random() - 0.5) * 2;
+      const z = (Math.random() - 0.5) * 6;
+      const scale = 0.85 + (i % 4) * 0.15;
+
+      list.push({
+        pos: [x, y, z],
+        basePos: new THREE.Vector3(x, y, z),
+        velocity: new THREE.Vector3(0, 0, 0),
+        scale,
+        textureIndex: i % techList.length,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.8 + Math.random() * 0.6,
+      });
+    }
+    return list;
+  }, []);
+
+  const handlePointerMove = (e: any) => {
+    const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const y = -(e.clientY / window.innerHeight) * 2 + 1;
+    mousePos.current.set(
+      (x * viewport.width) / 2,
+      (y * viewport.height) / 2,
+      0
     );
-    ref.current?.setNextKinematicTranslation(targetVec);
-  });
+    setIsHovered(true);
+  };
+
+  useEffect(() => {
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, [viewport]);
+
+  if (!isActive) return null;
 
   return (
-    <RigidBody
-      position={[100, 100, 100]}
-      type="kinematicPosition"
-      colliders={false}
-      ref={ref}
-    >
-      <BallCollider args={[2]} />
-    </RigidBody>
+    <>
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[10, 10, 10]} intensity={1.2} />
+      <pointLight position={[-10, -10, -5]} intensity={0.8} color="#c2a4ff" />
+
+      {spheres.map((s, idx) => (
+        <InteractiveSphere
+          key={idx}
+          data={s}
+          textures={textures}
+          mousePos={mousePos}
+          isHovered={isHovered}
+        />
+      ))}
+    </>
   );
 }
 
@@ -128,42 +172,22 @@ const TechStack = () => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
-      setIsActive(scrollY > threshold);
-    };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
-    });
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-  const materials = useMemo(() => {
-    return textures.map(
-      (texture) =>
-        new THREE.MeshPhysicalMaterial({
-          map: texture,
-          emissive: "#ffffff",
-          emissiveMap: texture,
-          emissiveIntensity: 0.3,
-          metalness: 0.5,
-          roughness: 1,
-          clearcoat: 0.1,
-        })
+    const target = document.querySelector(".techstack");
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsActive(entry.isIntersecting);
+        });
+      },
+      { threshold: 0.05 }
     );
+
+    observer.observe(target);
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return (
@@ -171,41 +195,17 @@ const TechStack = () => {
       <h2> My Techstack</h2>
 
       <Canvas
-        shadows
-        gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
-        camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
-        onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
+        dpr={[1, 1.5]}
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+          depth: true,
+        }}
+        camera={{ position: [0, 0, 18], fov: 35, near: 0.1, far: 50 }}
         className="tech-canvas"
       >
-        <ambientLight intensity={1} />
-        <spotLight
-          position={[20, 20, 25]}
-          penumbra={1}
-          angle={0.2}
-          color="white"
-          castShadow
-          shadow-mapSize={[512, 512]}
-        />
-        <directionalLight position={[0, 5, -4]} intensity={2} />
-        <Physics gravity={[0, 0, 0]}>
-          <Pointer isActive={isActive} />
-          {spheres.map((props, i) => (
-            <SphereGeo
-              key={i}
-              {...props}
-              material={materials[Math.floor(Math.random() * materials.length)]}
-              isActive={isActive}
-            />
-          ))}
-        </Physics>
-        <Environment
-          files="/models/char_enviorment.hdr"
-          environmentIntensity={0.5}
-          environmentRotation={[0, 4, 2]}
-        />
-        <EffectComposer enableNormalPass={false}>
-          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} />
-        </EffectComposer>
+        <SphereScene isActive={isActive} />
       </Canvas>
     </div>
   );

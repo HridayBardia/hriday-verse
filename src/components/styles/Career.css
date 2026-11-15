@@ -8,8 +8,9 @@
   opacity: 1;
   height: auto;
   margin: auto;
-  margin-bottom: 250px;
-  padding: 120px 0px;
+  margin-bottom: 120px;
+  padding: 100px 0px;
+  box-sizing: border-box;
 }
 
 .career-section h2 {

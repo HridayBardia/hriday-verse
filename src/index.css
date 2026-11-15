@@ -6,7 +6,6 @@
   font-optical-sizing: auto;
   font-style: normal;
   line-height: 1.5;
-  scroll-behavior: smooth;
   color-scheme: light dark;
   color: #eae5ec;
   background-color: var(--backgroundColor);
@@ -23,6 +22,53 @@
   --vh: 100vh;
   --vh: 100svh;
 }
+
+/* Fix sticky scroll jitter */
+html, body {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+.site-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+/* Apply to all animated sections or card wrappers */
+.section,
+.project-card,
+.work-box,
+.career-box,
+.what-box,
+.character-model,
+canvas {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Forces GPU layer creation */
+  backface-visibility: hidden;
+}
+
+/* Container holding the 3D Canvas in the background */
+.canvas-container,
+.character-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Allows clicks to pass through to UI */
+  z-index: 1;
+  will-change: transform;
+}
+
+/* Scrollable UI sections sitting on top of the 3D canvas */
+.content-wrapper,
+.content-sections {
+  position: relative;
+  z-index: 10;
+}
 h1,
 h2,
 h3,
@@ -30,9 +76,6 @@ h4,
 h5,
 h6 {
   font-family: "Geist", sans-serif;
-}
-body {
-  overflow: hidden;
 }
 a {
   color: inherit;
@@ -95,9 +138,8 @@ body {
   width: 100%;
   position: relative;
   height: var(--vh);
-  margin: auto;
-  margin-top: 50px;
-  margin-bottom: -100px;
+  margin: 60px auto;
+  z-index: 4;
 }
 
 .techstack h2 {

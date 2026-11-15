@@ -1,0 +1,14 @@
+[
+  {
+    "timestamp": "2026-11-14T21:43:55.882919Z",
+    "name": "Hriday Bardia",
+    "email": "hriday@example.com",
+    "message": "Test message from automated suite"
+  },
+  {
+    "timestamp": "2026-11-15T11:30:38.053134Z",
+    "name": "Tester",
+    "email": "test@jain.ac.in",
+    "message": "Testing contact form"
+  }
+]

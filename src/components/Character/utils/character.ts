@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { DRACOLoader, GLTF, GLTFLoader } from "three-stdlib";
 import { setCharTimeline, setAllTimeline } from "../../utils/GsapScroll";
-import { decryptFile } from "./decrypt";
 
 const setCharacter = (
   renderer: THREE.WebGLRenderer,
@@ -14,20 +13,18 @@ const setCharacter = (
   loader.setDRACOLoader(dracoLoader);
 
   const loadCharacter = () => {
-    return new Promise<GLTF | null>(async (resolve, reject) => {
+    return new Promise<GLTF | null>((resolve) => {
       try {
-        const encryptedBlob = await decryptFile(
-          "/models/character.enc",
-          "Character3D#@"
-        );
-        const blobUrl = URL.createObjectURL(new Blob([encryptedBlob]));
-
         let character: THREE.Object3D;
         loader.load(
-          blobUrl,
+          "/models/character.glb",
           async (gltf) => {
             character = gltf.scene;
-            await renderer.compileAsync(character, camera, scene);
+            try {
+              await renderer.compileAsync(character, camera, scene);
+            } catch (compileErr) {
+              // Non-blocking compile fallback
+            }
             character.traverse((child: any) => {
               if (child.isMesh) {
                 const mesh = child as THREE.Mesh;
@@ -36,22 +33,36 @@ const setCharacter = (
                 mesh.frustumCulled = true;
               }
             });
+
+            const footR =
+              character.getObjectByName("footR") ||
+              character.getObjectByName("foot.R");
+            const footL =
+              character.getObjectByName("footL") ||
+              character.getObjectByName("foot.L");
+            if (footR) footR.position.y = 3.36;
+            if (footL) footL.position.y = 3.36;
+
             resolve(gltf);
-            setCharTimeline(character, camera);
-            setAllTimeline();
-            character!.getObjectByName("footR")!.position.y = 3.36;
-            character!.getObjectByName("footL")!.position.y = 3.36;
+
+            try {
+              setCharTimeline(character, camera);
+              setAllTimeline();
+            } catch (tlErr) {
+              console.warn("Timeline initialization notice:", tlErr);
+            }
+
             dracoLoader.dispose();
           },
           undefined,
           (error) => {
             console.error("Error loading GLTF model:", error);
-            reject(error);
+            resolve(null);
           }
         );
       } catch (err) {
-        reject(err);
-        console.error(err);
+        console.error("Failed to initialize character model loader:", err);
+        resolve(null);
       }
     });
   };

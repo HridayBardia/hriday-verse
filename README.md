@@ -1,65 +1,58 @@
-# My Portfolio Website - Overview 🚀
+# Hriday Bardia — 3D Developer Portfolio (hriday-verse) 🚀
 
-This repository contains the open-source version of my personal portfolio website.  
-Feel free to explore the code and use it for learning and inspiration.
-
----
-
-## ⚠️ Usage Notice
-
-This project is shared for learning purposes only.
-
-Please do NOT:
-- Clone or replicate the full website or design
-- Repost it with minor content changes
-- Use this project for commercial/client work
-- Create tutorials or content using this exact project
-
-If you use parts of the code, you must provide proper credit linking back to the original repository.
-
-Build your own version — don’t just copy.
-
-— Moncy Yohannan
+A high-performance interactive 3D portfolio featuring WebGL Three.js character animation, smooth scroll synchronization via Lenis & GSAP, and a Python Flask backend.
 
 ---
 
-## 🛠️ Instructions
+## 👨‍💻 About
 
-I have modified the GSAP Club plugins using trial versions.  
-⚠️ Note: Trial plugins cannot be used for production or hosting.
+**Hriday Bardia**  
+B.Tech in Computer Science & Engineering (AI & ML) — Jain University  
+Passionate about Artificial Intelligence, Machine Learning, Full-Stack Architecture, and Interactive 3D Web Experiences.
 
-For official GSAP Club plugins, refer here:  
-https://gsap.com/docs/v3/Installation/
+- **Email**: hridaybardia@gmail.com
+- **LinkedIn**: [Hriday Bardia](https://www.linkedin.com/in/hriday-bardia-39130728b)
+- **GitHub**: [HridayBardia](https://github.com/HridayBardia)
 
 ---
 
 ## ⚙️ Tech Stack
 
-React • TypeScript • GSAP • Three.js • WebGL • HTML • CSS • JavaScript
+- **Frontend**: React 18, TypeScript, Vite
+- **3D & Graphics**: Three.js, React Three Fiber, GLTF / Draco loaders, ACESFilmic Tone Mapping
+- **Animation & Motion**: GSAP (ScrollTrigger), Lenis Smooth Scroll
+- **Backend API**: Python 3, Flask, CORS, RESTful Endpoints (`/api/visitor-count`, `/api/contact`)
+- **Styling**: CSS3, Responsive Grid / Flexbox, GPU Hardware Acceleration
 
 ---
 
-## 🎨 Assets Usage
+## 🚀 Getting Started
 
-Some 3D assets included in this repository are free to use for learning purposes.
+### 1. Frontend Setup
+```bash
+npm install
+npm run dev
+```
+The frontend dev server runs on `http://localhost:3000`.
 
-However:
+To create an optimized production build:
+```bash
+npm run build
+npm run preview
+```
 
-- The original 3D avatar used on my live portfolio is NOT included in this repository
-- That avatar is a custom asset created over ~1 month
-- It is not open source and not available for reuse
-
-Any usage, extraction, or redistribution of that avatar from my live website is strictly prohibited.
+### 2. Backend Setup
+```bash
+cd backend
+pip install -r requirements.txt
+python app.py
+```
+The Flask backend runs on `http://localhost:5000` with the following endpoints:
+- `GET /api/visitor-count` — Real-time visitor counter with atomic persistence
+- `POST /api/contact` — Secure contact message submission
 
 ---
 
-![Protfolio-Preview](https://github.com/user-attachments/assets/3c4557e7-6392-4928-b8a9-7b2476ef4edd)
+## 📄 Credits & Inspiration
 
----
-
-## 📄 License
-
-This project is licensed under the Personal Portfolio License (PPL) v1.0.
-
-See the LICENSE file for full details
-
+Originally inspired by Moncy Yohannan's creative portfolio architecture, customized and extended by Hriday Bardia with Python backend integration, real-time telemetry, and smooth scroll optimizations.

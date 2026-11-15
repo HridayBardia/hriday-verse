@@ -11,13 +11,18 @@ interface Props {
 const WorkImage = (props: Props) => {
   const [isVideo, setIsVideo] = useState(false);
   const [video, setVideo] = useState("");
+
   const handleMouseEnter = async () => {
     if (props.video) {
       setIsVideo(true);
-      const response = await fetch(`src/assets/${props.video}`);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      setVideo(blobUrl);
+      try {
+        const response = await fetch(props.video);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        setVideo(blobUrl);
+      } catch (e) {
+        console.error("Video load error:", e);
+      }
     }
   };
 
@@ -25,18 +30,24 @@ const WorkImage = (props: Props) => {
     <div className="work-image">
       <a
         className="work-image-in"
-        href={props.link}
+        href={props.link || "#"}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsVideo(false)}
         target="_blank"
-        data-cursor={"disable"}
+        rel="noreferrer"
+        data-cursor="disable"
       >
         {props.link && (
           <div className="work-link">
             <MdArrowOutward />
           </div>
         )}
-        <img src={props.image} alt={props.alt} />
+        <img
+          src={props.image}
+          alt={props.alt || "Project Card Preview"}
+          loading="lazy"
+          decoding="async"
+        />
         {isVideo && <video src={video} autoPlay muted playsInline loop></video>}
       </a>
     </div>

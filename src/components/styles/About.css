@@ -5,9 +5,12 @@
   place-items: center;
   position: relative;
   opacity: 1;
+  min-height: 80vh;
   height: auto;
   width: var(--cWidth);
   margin: auto;
+  padding: 80px 0px;
+  box-sizing: border-box;
 }
 .about-me {
   padding: 50px 0px;
@@ -50,8 +53,9 @@
     width: var(--cWidth);
     justify-content: right;
     max-width: 1920px;
-    height: var(--vh);
-    padding: 0px;
+    min-height: var(--vh);
+    height: auto;
+    padding: 100px 0px;
     opacity: 1;
   }
   .about-me {
@@ -59,7 +63,7 @@
     width: 50%;
   }
   .about-me p {
-    font-size: 1.9vw;
+    font-size: 1.8vw;
     line-height: 2.3vw;
   }
 }

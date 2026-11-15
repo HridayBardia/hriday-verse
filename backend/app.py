@@ -8,12 +8,24 @@ app = Flask(__name__)
 # Enable CORS for all routes and origins
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-DATA_DIR = os.path.dirname(os.path.abspath(__file__))
+# Handle Vercel serverless read-only environment
+IS_VERCEL = bool(os.environ.get("VERCEL"))
+DATA_DIR = "/tmp" if IS_VERCEL else os.path.dirname(os.path.abspath(__file__))
+SOURCE_DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 COUNTER_FILE = os.path.join(DATA_DIR, "visitor_count.json")
 MESSAGES_FILE = os.path.join(DATA_DIR, "messages.json")
 
 # Initialize visitor count
 def load_visitor_count():
+    if not os.path.exists(COUNTER_FILE) and IS_VERCEL:
+        source_counter = os.path.join(SOURCE_DATA_DIR, "visitor_count.json")
+        if os.path.exists(source_counter):
+            try:
+                with open(source_counter, "r") as f:
+                    data = json.load(f)
+                    return data.get("count", 100)
+            except Exception:
+                pass
     if os.path.exists(COUNTER_FILE):
         try:
             with open(COUNTER_FILE, "r") as f:

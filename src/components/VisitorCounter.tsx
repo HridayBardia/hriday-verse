@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import "./styles/VisitorCounter.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ??
+  (typeof window !== "undefined" && window.location.hostname === "localhost" && window.location.port === "3000"
+    ? "http://localhost:5000"
+    : "");
 
 let sharedCountPromise: Promise<number> | null = null;
 

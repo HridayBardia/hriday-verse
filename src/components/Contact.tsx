@@ -4,7 +4,11 @@ import { IoCheckmarkCircleOutline, IoAlertCircleOutline } from "react-icons/io5"
 import VisitorCounter from "./VisitorCounter";
 import "./styles/Contact.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ??
+  (typeof window !== "undefined" && window.location.hostname === "localhost" && window.location.port === "3000"
+    ? "http://localhost:5000"
+    : "");
 
 const Contact = () => {
   const [formData, setFormData] = useState({

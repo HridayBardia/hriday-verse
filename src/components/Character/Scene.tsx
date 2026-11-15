@@ -16,20 +16,25 @@ import { setProgress } from "../Loading";
 const Scene = () => {
   const canvasDiv = useRef<HTMLDivElement | null>(null);
   const hoverDivRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef(new THREE.Scene());
   const { setLoading } = useLoading();
   const [, setChar] = useState<THREE.Object3D | null>(null);
 
   useEffect(() => {
     if (!canvasDiv.current) return;
 
-    let rect = canvasDiv.current.getBoundingClientRect();
-    let container = {
+    let isMounted = true;
+    let animFrameId: number;
+    let debounce: number | undefined;
+
+    const rect = canvasDiv.current.getBoundingClientRect();
+    const container = {
       width: rect.width || window.innerWidth,
       height: rect.height || window.innerHeight,
     };
     const aspect = container.width / container.height;
-    const scene = sceneRef.current;
+
+    // Fresh scene instance dedicated to this mount lifecycle
+    const scene = new THREE.Scene();
 
     // Remove any existing canvas before appending a fresh one
     const existingCanvas = canvasDiv.current.querySelector("canvas");
@@ -58,22 +63,48 @@ const Scene = () => {
     let headBone: THREE.Object3D | null = null;
     let screenLight: any | null = null;
     let mixer: THREE.AnimationMixer | null = null;
-    let animFrameId: number;
+    let characterModel: THREE.Object3D | null = null;
 
     const clock = new THREE.Clock();
     const light = setLighting(scene);
-    let progress = setProgress((value) => setLoading(value));
+    const progress = setProgress((value) => setLoading(value));
     const { loadCharacter } = setCharacter(renderer, scene, camera);
+
+    const onResize = () => {
+      if (characterModel) {
+        handleResize(renderer, camera, canvasDiv, characterModel);
+      }
+    };
 
     loadCharacter()
       .then((gltf) => {
+        if (!isMounted) return;
+
         if (gltf) {
-          const animations = setAnimations(gltf);
-          hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
-          mixer = animations.mixer;
-          let character = gltf.scene;
-          setChar(character);
+          const character = gltf.scene;
+          characterModel = character;
+
+          // Remove any previous character objects before adding
+          scene.children.slice().forEach((child) => {
+            if ((child as any).isGroup) {
+              scene.remove(child);
+            }
+          });
+
           scene.add(character);
+          setChar(character);
+
+          const animations = setAnimations(gltf);
+          mixer = animations.mixer;
+
+          // CRITICAL: Immediately evaluate the mixer so the character bones
+          // snap from the rest bind pose (T-pose) to the intended sitting pose instantly!
+          mixer.update(0.01);
+
+          if (hoverDivRef.current) {
+            animations.hover(gltf, hoverDivRef.current);
+          }
+
           headBone =
             character.getObjectByName("spine006") ||
             character.getObjectByName("spine.006") ||
@@ -81,15 +112,15 @@ const Scene = () => {
           screenLight = character.getObjectByName("screenlight") || null;
 
           progress.loaded().then(() => {
+            if (!isMounted) return;
             setTimeout(() => {
+              if (!isMounted) return;
               light.turnOnLights();
               animations.startIntro();
             }, 2500);
           });
 
-          window.addEventListener("resize", () =>
-            handleResize(renderer, camera, canvasDiv, character)
-          );
+          window.addEventListener("resize", onResize, { passive: true });
         } else {
           progress.loaded();
         }
@@ -106,7 +137,6 @@ const Scene = () => {
       handleMouseMove(event, (x, y) => (mouse = { x, y }));
     };
 
-    let debounce: number | undefined;
     const onTouchStart = (event: TouchEvent) => {
       const element = event.target as HTMLElement;
       debounce = window.setTimeout(() => {
@@ -152,17 +182,19 @@ const Scene = () => {
     animate();
 
     return () => {
+      isMounted = false;
       cancelAnimationFrame(animFrameId);
       clearTimeout(debounce);
-      scene.clear();
-      renderer.dispose();
       window.removeEventListener("mousemove", onMouseMove);
-      if (canvasDiv.current && renderer.domElement.parentNode === canvasDiv.current) {
-        canvasDiv.current.removeChild(renderer.domElement);
-      }
+      window.removeEventListener("resize", onResize);
       if (landingDiv) {
         landingDiv.removeEventListener("touchstart", onTouchStart);
         landingDiv.removeEventListener("touchend", onTouchEnd);
+      }
+      scene.clear();
+      renderer.dispose();
+      if (canvasDiv.current && renderer.domElement.parentNode === canvasDiv.current) {
+        canvasDiv.current.removeChild(renderer.domElement);
       }
     };
   }, []);

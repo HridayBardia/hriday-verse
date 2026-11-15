@@ -54,19 +54,40 @@
   box-sizing: border-box;
 }
 
-.loading-marquee {
+.loading-marquee-container {
   width: 100%;
   overflow: hidden;
   margin-bottom: 30px;
-  font-size: 22px;
+  position: relative;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.loading-marquee-track {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
 }
 
-.loading-marquee span {
-  margin: 0 20px;
+.loading-marquee-track span {
+  margin: 0 16px;
+  white-space: nowrap;
 }
 
 .loading-bar-wrap {

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./styles/Loading.css";
 import { useLoading } from "../context/LoadingProvider";
-import Marquee from "react-fast-marquee";
 
 const Loading = ({ percent }: { percent: number }) => {
   const { setIsLoading } = useLoading();
@@ -33,11 +32,30 @@ const Loading = ({ percent }: { percent: number }) => {
         </a>
       </div>
       <div className="loading-center">
-        <div className="loading-marquee">
-          <Marquee speed={35} gradient={false}>
-            <span> Hriday Bardia</span> <span>AI & ML Engineer</span>
-            <span> Full-Stack Architect</span> <span>Creative Technologist</span>
-          </Marquee>
+        <div className="loading-marquee-container">
+          <div className="animate-marquee loading-marquee-track">
+            <span>Hriday Bardia</span>
+            <span>•</span>
+            <span>AI & Software Architect</span>
+            <span>•</span>
+            <span>Python & Flask</span>
+            <span>•</span>
+            <span>React & Three.js</span>
+            <span>•</span>
+            <span>Creative Technologist</span>
+            <span>•</span>
+            {/* Duplicated for seamless infinite loop */}
+            <span>Hriday Bardia</span>
+            <span>•</span>
+            <span>AI & Software Architect</span>
+            <span>•</span>
+            <span>Python & Flask</span>
+            <span>•</span>
+            <span>React & Three.js</span>
+            <span>•</span>
+            <span>Creative Technologist</span>
+            <span>•</span>
+          </div>
         </div>
         <div className="loading-bar-wrap">
           <div className="loading-bar-fill" style={{ width: `${percent}%` }}></div>

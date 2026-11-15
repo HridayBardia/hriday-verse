@@ -38,9 +38,6 @@ export default defineConfig({
             if (id.includes("react-icons")) {
               return "icons-vendor";
             }
-            if (id.includes("react-fast-marquee")) {
-              return "marquee-vendor";
-            }
             return "vendor";
           }
         },

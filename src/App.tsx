@@ -6,22 +6,25 @@ const MainContainer = lazy(() => import("./components/MainContainer"));
 import { LoadingProvider } from "./context/LoadingProvider";
 import SmoothScroll from "./components/SmoothScroll";
 import ErrorBoundary from "./components/ErrorBoundary";
+import SafeClientWrapper from "./components/SafeClientWrapper";
 
 const App = () => {
   return (
-    <ErrorBoundary>
-      <LoadingProvider>
-        <SmoothScroll>
-          <Suspense fallback={null}>
-            <MainContainer>
-              <Suspense fallback={null}>
-                <CharacterModel />
-              </Suspense>
-            </MainContainer>
-          </Suspense>
-        </SmoothScroll>
-      </LoadingProvider>
-    </ErrorBoundary>
+    <SafeClientWrapper>
+      <ErrorBoundary>
+        <LoadingProvider>
+          <SmoothScroll>
+            <Suspense fallback={null}>
+              <MainContainer>
+                <Suspense fallback={null}>
+                  <CharacterModel />
+                </Suspense>
+              </MainContainer>
+            </Suspense>
+          </SmoothScroll>
+        </LoadingProvider>
+      </ErrorBoundary>
+    </SafeClientWrapper>
   );
 };
 
